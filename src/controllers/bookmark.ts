@@ -5,27 +5,17 @@ import { success } from "../utils/okHandler";
 import { handleError } from "../utils/errHandler";
 import { NotFoundError, ValidationError } from "../utils/errExtensions";
 
-const bookmarkSchema = z.object({
-  title: z.string().min(1),
-  url: z.string().url(),
-  categoryId: z.string().optional(),
-  tags: z.array(z.string()).optional(),
-});
-
 export const create = async (c: Context, next: Next) => {
   try {
     const userId = c.get("userId");
     const body = await c.req.json();
-    const parsed = bookmarkSchema.safeParse(body);
-
-    if (!parsed.success) return c.json({ error: parsed.error.format() }, 400);
 
     const bookmark = await bookmarkServices.createBookmark({
       userId: userId,
-      title: parsed.data.title,
-      url: parsed.data.url,
-      categoryId: parsed.data.categoryId,
-      tags: parsed.data.tags,
+      title: body.title,
+      url: body.url,
+      categoryId: body.categoryId,
+      tags: body.tags,
     });
 
     return success(c, bookmark);
@@ -59,12 +49,6 @@ export const updateOne = async (c: Context) => {
     const userId = c.get("userId");
     const { id } = c.req.param();
     const body = await c.req.json();
-    const parsed = bookmarkSchema.safeParse(body);
-
-    if (!parsed.success) {
-      const errors = parsed.error.issues;
-      throw new ValidationError("Validation Error", errors);
-    }
 
     const bookmark = await bookmarkServices.updateBookmark(userId, id, body);
 

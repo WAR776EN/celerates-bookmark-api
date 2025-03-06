@@ -4,7 +4,7 @@ import * as bookmarkServices from "../services/bookmark.service";
 import { handleError } from "../utils/errHandler";
 import { success } from "../utils/okHandler";
 import { NotFoundError } from "../utils/errExtensions";
-import * as reqValidation from "../interfaces/validations/category";
+import * as reqValidation from "../middlewares/validations/category";
 
 // Create Category
 export const create = async (c: Context) => {

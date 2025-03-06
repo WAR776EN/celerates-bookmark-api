@@ -2,7 +2,8 @@ import { ZodFormattedError, ZodIssue } from "zod";
 
 export class ValidationError extends Error {
   constructor(message: string, validationErr: Array<ZodIssue>) {
-    super(message);
+    const errMsg = validationErr.map((e) => [e.path, e.message].join(": ")).join("\n");
+    super(message + ` ${errMsg}`);
     this.name = "ValidationError";
   }
 }

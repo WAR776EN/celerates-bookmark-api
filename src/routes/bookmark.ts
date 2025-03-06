@@ -1,13 +1,14 @@
 import { Hono } from "hono";
 import * as BookmarkController from "../controllers/bookmark";
-import { isLoggedIn } from "../controllers";
+import { validatePayload } from "../middlewares/validations/bookmark";
+import { isLoggedIn } from "../controllers/auth";
 const bookmarkRouter = new Hono();
 
 // Validate user's token within this route
 bookmarkRouter.use("*", isLoggedIn);
 
 // Create a Bookmark
-bookmarkRouter.post("/", BookmarkController.create);
+bookmarkRouter.post("/", validatePayload, BookmarkController.create);
 
 // // Get All Bookmarks
 bookmarkRouter.get("/", BookmarkController.getMany);
@@ -16,7 +17,7 @@ bookmarkRouter.get("/", BookmarkController.getMany);
 bookmarkRouter.get("/:id", BookmarkController.getOne);
 
 // // Update Bookmark
-bookmarkRouter.put("/:id", BookmarkController.updateOne);
+bookmarkRouter.put("/:id", validatePayload, BookmarkController.updateOne);
 
 // // Delete Bookmark
 bookmarkRouter.delete("/:id", BookmarkController.deleteOne);

@@ -1,45 +1,34 @@
 import { Context, Next } from "hono";
 import { registerUser, loginUser, verifyUserToken } from "../services";
 import { handleError } from "../utils/errHandler";
-import { z } from "zod";
+
 import { IRegisterReq, IRegisterRes } from "../interfaces/api/register.interface";
 
-const authSchema = z.object({
-  email: z.string().email("Email must be a correct format"),
-  password: z.string().min(6, "Password must contain at least 6 characters"),
-});
+// const authSchema = z.object({
+//   email: z.string().email("Email must be a correct format"),
+//   password: z.string().min(6, "Password must contain at least 6 characters"),
+// });
 
 export const register = async (c: Context) => {
   try {
     const body = await c.req.json<IRegisterReq>();
-    const parsed = authSchema.safeParse(body);
-
-    if (!parsed.success) {
-      return c.json({ error: parsed.error.flatten() }, 400);
-    }
-
-    const token = await registerUser(parsed.data.email, parsed.data.password);
+    const token = await registerUser(body.email, body.password);
     return c.json<IRegisterRes>({ message: "User registered successfully", token });
   } catch (err) {
-    return handleError(c, err)
+    return handleError(c, err);
   }
-}
+};
 
 export const login = async (c: Context) => {
   try {
     const body = await c.req.json();
-    const parsed = authSchema.safeParse(body);
-    
-    if (!parsed.success) {
-      return c.json({ error: parsed.error.format() }, 400);
-    }
 
-    const token = await loginUser(parsed.data.email, parsed.data.password);
+    const token = await loginUser(body.email, body.password);
     return c.json({ message: "Login successful", token });
   } catch (err) {
-    return handleError(c, err)
+    return handleError(c, err);
   }
-}
+};
 
 export const isLoggedIn = async (c: Context, next: Next) => {
   const token = c.req.header("Authorization")?.split(" ")[1];
@@ -52,4 +41,4 @@ export const isLoggedIn = async (c: Context, next: Next) => {
   } catch {
     return c.json({ error: "Invalid token" }, 401);
   }
-}
+};
