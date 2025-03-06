@@ -99,13 +99,3 @@ npx tsx src/app.ts
 - `GET /bookmarks/search?q=react` - Full-text search (on development)
 
 ---
-
-## Running Tests
-
-Run unit & integration tests using Jest:
-
-```sh
-npm run test
-```
-
----
