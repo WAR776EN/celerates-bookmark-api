@@ -3,7 +3,7 @@ import * as bookmarkServices from "../services";
 import { z } from "zod";
 import { success } from "../utils/okHandler";
 import { handleError } from "../utils/errHandler";
-import { NotFoundError } from "../utils/errExtensions";
+import { NotFoundError, ValidationError } from "../utils/errExtensions";
 
 const bookmarkSchema = z.object({
   title: z.string().min(1),
@@ -59,10 +59,14 @@ export const updateOne = async (c: Context) => {
     const userId = c.get("userId");
     const { id } = c.req.param();
     const body = await c.req.json();
+    const parsed = bookmarkSchema.safeParse(body);
 
-    const _ = await bookmarkServices.updateBookmark(userId, id, body);
-    if (!_.count) throw new NotFoundError("Bookmark not found");
-    const bookmark = await bookmarkServices.getBookmarkById(userId, id);
+    if (!parsed.success) {
+      const errors = parsed.error.issues;
+      throw new ValidationError("Validation Error", errors);
+    }
+
+    const bookmark = await bookmarkServices.updateBookmark(userId, id, body);
 
     return success(c, bookmark);
   } catch (err) {

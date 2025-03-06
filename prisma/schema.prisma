@@ -35,5 +35,6 @@ model bookmark {
 model category {
   id        String     @id @default(uuid())
   name      String     @unique
+  userId    String
   bookmarks bookmark[]
 }
