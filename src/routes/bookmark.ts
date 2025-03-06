@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import * as BookmarkController from "../controllers/bookmark";
+import * as SearchController from "../controllers/searchBookmark";
 import { validatePayload } from "../middlewares/validations/bookmark";
 import { isLoggedIn } from "../controllers/auth";
 const bookmarkRouter = new Hono();
@@ -12,6 +13,8 @@ bookmarkRouter.post("/", validatePayload, BookmarkController.create);
 
 // // Get All Bookmarks
 bookmarkRouter.get("/", BookmarkController.getMany);
+
+bookmarkRouter.get("/search", SearchController.searchBookmarks);
 
 // // Get Single Bookmark
 bookmarkRouter.get("/:id", BookmarkController.getOne);
